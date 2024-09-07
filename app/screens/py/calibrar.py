@@ -5,6 +5,7 @@ from kivymd.uix.dialog import MDDialog
 from kivymd.uix.button import MDRaisedButton
 from kivy.uix.dropdown import DropDown
 from kivy.uix.button import Button
+import json
 
 class CalibrarScreen(Screen):
     current_time = StringProperty()
@@ -16,7 +17,7 @@ class CalibrarScreen(Screen):
 
         # Configura el menú desplegable
         self.dropdown = DropDown()
-        self.create_dropdown_items([40, 50])  # Añade los números iniciales al dropdown
+        self.load_dropdown_items()  # Carga los datos del JSON para el dropdown
 
     def update_time(self, *args):
         from datetime import datetime
@@ -59,3 +60,13 @@ class CalibrarScreen(Screen):
     def select_dropdown_item(self, value):
         print(f"Selección del dropdown: {value}")
 
+    def load_dropdown_items(self):
+        try:
+            with open('./app/resources/data/coordinates_10.json', 'r') as file:
+                data = json.load(file)
+                tags = [str(tag['tag']) for tag in data.get('tags', [])]
+                self.create_dropdown_items(tags)
+        except FileNotFoundError:
+            print("Archivo JSON no encontrado.")
+        except json.JSONDecodeError:
+            print("Error al decodificar el archivo JSON.")

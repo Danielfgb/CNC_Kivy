@@ -23,74 +23,80 @@
                 size: (200, 200)
                 pos_hint: {"center_x": 0.5, "center_y": 0.5}
 
-        # Gamepad para mover ejes X y Y
-        FloatLayout:
-            size_hint_y: 0.4
-            padding: 20
-
-            MDFloatingActionButton:
-                icon: "arrow-up"
-                on_release: root.move_y_positive()
-                pos_hint: {"center_x": 0.2, "center_y": 0.8}
-                text_color: [0, 0, 0, 1]  
-                md_bg_color: [1, 0.5, 0, 1]
-
-            MDFloatingActionButton:
-                icon: "arrow-left"
-                on_release: root.move_x_negative()
-                pos_hint: {"center_x": 0.1, "center_y": 0.5}
-                text_color: [0, 0, 0, 1]  
-                md_bg_color: [1, 0.5, 0, 1]
-
-            MDFloatingActionButton:
-                icon: "arrow-right"
-                on_release: root.move_x_positive()
-                pos_hint: {"center_x": 0.3, "center_y": 0.5}
-                text_color: [0, 0, 0, 1]  
-                md_bg_color: [1, 0.5, 0, 1]
-
-            MDFloatingActionButton:
-                icon: "arrow-down"
-                on_release: root.move_y_negative()
-                pos_hint: {"center_x": 0.2, "center_y": 0.2}
-                text_color: [0, 0, 0, 1]  
-                md_bg_color: [1, 0.5, 0, 1]
-
-        FloatLayout:
-            size_hint_y: 0.8
+        # Contenedor para los botones de movimiento de ejes X e Y
+        BoxLayout:
+            orientation: 'horizontal'
+            size_hint_y: 0.3
             padding: 10
+            spacing: 10
 
-            MDFloatingActionButton:
-                icon: "arrow-up-bold"
-                on_release: root.move_z_positive()
-                pos_hint: {"center_x": 0.8, "center_y": 0.8}
-                text_color: [0, 0, 0, 1]  
-                md_bg_color: [1, 0.5, 0, 1]
+            FloatLayout:
+                size_hint_x: 0.6
+                padding: 10
 
-            MDFloatingActionButton:
-                icon: "arrow-down-bold"
-                on_release: root.move_z_negative()
-                pos_hint: {"center_x": 0.8, "center_y": 0.2}
-                text_color: [0, 0, 0, 1]  
-                md_bg_color: [1, 0.5, 0, 1]
+                MDFloatingActionButton:
+                    icon: "arrow-up"
+                    on_release: root.move_y_positive()
+                    pos_hint: {"center_x": 0.4, "center_y": 0.8}
+                    text_color: [0, 0, 0, 1]  
+                    md_bg_color: [1, 0.5, 0, 1]
 
-            MDFillRoundFlatIconButton:
-                text: "Guardar"
-                icon: "content-save-cog"
-                text_color: [0, 0, 0, 1]  
-                md_bg_color: [1, 0.5, 0, 1]
-                pos_hint: {"center_x": 0.9, "center_y": 0.4}
-                on_release: root.save_settings()
+                MDFloatingActionButton:
+                    icon: "arrow-left"
+                    on_release: root.move_x_negative()
+                    pos_hint: {"center_x": 0.2, "center_y": 0.5}
+                    text_color: [0, 0, 0, 1]  
+                    md_bg_color: [1, 0.5, 0, 1]
 
-            MDRaisedButton:
-                id: dropdown_button
-                text: "# Placa"
-                text_color: [0, 0, 0, 1]  
-                md_bg_color: [1, 0.5, 0, 1]
-                pos_hint: {"center_x": 0.9, "center_y": 0.8}
-                on_release: root.show_dropdown()
+                MDFloatingActionButton:
+                    icon: "arrow-right"
+                    on_release: root.move_x_positive()
+                    pos_hint: {"center_x": 0.6, "center_y": 0.5}
+                    text_color: [0, 0, 0, 1]  
+                    md_bg_color: [1, 0.5, 0, 1]
 
-        # Barra inferior con reloj
+                MDFloatingActionButton:
+                    icon: "arrow-down"
+                    on_release: root.move_y_negative()
+                    pos_hint: {"center_x": 0.4, "center_y": 0.2}
+                    text_color: [0, 0, 0, 1]  
+                    md_bg_color: [1, 0.5, 0, 1]
+
+            # Contenedor para los botones del eje Z y otros botones
+            FloatLayout:
+                size_hint_x: 0.4
+                padding: 10
+
+                MDFloatingActionButton:
+                    icon: "arrow-up-bold"
+                    on_release: root.move_z_positive()
+                    pos_hint: {"center_x": 0.4, "center_y": 0.7}
+                    text_color: [0, 0, 0, 1]  
+                    md_bg_color: [1, 0.5, 0, 1]
+
+                MDFloatingActionButton:
+                    icon: "arrow-down-bold"
+                    on_release: root.move_z_negative()
+                    pos_hint: {"center_x": 0.4, "center_y": 0.3}
+                    text_color: [0, 0, 0, 1]  
+                    md_bg_color: [1, 0.5, 0, 1]
+
+                MDRaisedButton:
+                    id: dropdown_button
+                    text: "# Placa"
+                    text_color: [0, 0, 0, 1]  
+                    md_bg_color: [1, 0.5, 0, 1]
+                    pos_hint: {"center_x": 0.7, "center_y": 0.7}
+                    on_release: root.show_dropdown()
+
+                MDRaisedButton:
+                    text: "Guardar"
+                    icon: "content-save-cog"
+                    text_color: [0, 0, 0, 1]  
+                    md_bg_color: [1, 0.5, 0, 1]
+                    pos_hint: {"center_x": 0.7, "center_y": 0.3}
+                    on_release: root.save_settings()
+
         MDBoxLayout:
             size_hint_y: None
             height: "48dp"
