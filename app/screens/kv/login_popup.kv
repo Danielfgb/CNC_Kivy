@@ -1,0 +1,22 @@
+<Content>:
+    orientation: "vertical"
+    spacing: "12dp"
+    size_hint_y: None
+    height: "120dp"
+
+    MDTextField:    
+        id: username  # Asigna un id para capturar el texto
+        hint_text: "Usuario"
+
+    MDTextField:
+        id: password  # Asigna un id para capturar la contraseña
+        hint_text: "Contraseña"
+        password: True
+
+MDFloatLayout:
+
+    MDFlatButton:
+        text: "LOGIN DIALOG"
+        pos_hint: {'center_x': .5, 'center_y': .5}
+        on_release: app.show_login_dialog()
+

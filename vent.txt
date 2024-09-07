@@ -1,0 +1,13 @@
+Set-ExecutionPolicy Unrestricted -Scope Process   
+
+python -m venv kivy_venv
+
+.\kivy_venv\Scripts\Activate
+
+pip install kivy[full]
+
+python -m pip install "kivy[base]" kivy_examples
+
+pip install kivymd==1.1.1
+
+https://kivymd.readthedocs.io/en/1.1.1/components/

@@ -1,0 +1,53 @@
+<InicioScreen>:
+    MDBoxLayout:
+        orientation: "vertical"
+
+        MDTopAppBar:
+            id: toolbar
+            title: "Placa de identificación para mascotas"
+            text_color: [0, 0, 0, 1]
+            use_overflow: True
+            right_action_items: [["account-circle", lambda x: root.show_login_popup(), "Login"]]
+            elevation: 0
+            md_bg_color: [0.855, 0.435, 0.0, 1.0]
+
+        BoxLayout:
+            orientation: "vertical"
+            padding: 50
+            spacing: 20
+            size_hint_y: 1
+
+            Widget:
+                size_hint_y: None
+                height: 10
+
+            Image:
+                source: './app/resources/img/cam.png'
+                size_hint: (None, None)
+                size: (200, 200)
+                pos_hint: {"center_x": .5}
+
+            MDFillRoundFlatIconButton:
+                text: "Calibrar"    
+                icon: "cog"
+                on_press: app.root.current = 'calibrar'
+                size_hint: None, None
+                size: dp(200), dp(50)  
+                pos_hint: {"center_x": 0.5}  
+                text_color: [0, 0, 0, 1]  #
+                md_bg_color: [1, 0.5, 0, 1]
+
+
+        MDBoxLayout:
+            size_hint_y: None
+            height: "48dp"
+            md_bg_color: [0.855, 0.435, 0.0, 1.0]
+            
+            MDLabel:
+                text: root.current_time
+                halign: "left"
+                valign: "middle"
+                color: [0, 0, 0, 1]
+
+
+
