@@ -12,13 +12,14 @@
             elevation: 0
             md_bg_color: [0.855, 0.435, 0.0, 1.0]
 
-        # Recuadro de imagen (lo puedes modificar más tarde)
+        # Recuadro de imagen o stream
         FloatLayout:
             size_hint_y: 0.4
             padding: 10
 
-            Image:
-                source: './app/resources/img/cam.png'
+            AsyncImage:
+                id: camera_image
+                source: './app/resources/img/cam.png'  # Imagen predeterminada
                 size_hint: (None, None)
                 size: (200, 200)
                 pos_hint: {"center_x": 0.5, "center_y": 0.5}
@@ -91,12 +92,12 @@
 
                 MDRaisedButton:
                     text: "Guardar"
-                    icon: "content-save-cog"
                     text_color: [0, 0, 0, 1]  
                     md_bg_color: [1, 0.5, 0, 1]
                     pos_hint: {"center_x": 0.7, "center_y": 0.3}
                     on_release: root.save_settings()
 
+        # Barra inferior para mostrar la hora
         MDBoxLayout:
             size_hint_y: None
             height: "48dp"

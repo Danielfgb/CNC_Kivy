@@ -23,17 +23,17 @@
 
             FloatLayout:
                 Image:
-                    source: './app/resources/img/cam.png'
+                    source: './app/resources/img/Cartoon1.png'
                     size_hint: (None, None)
-                    size: (200, 200)
+                    size: (600, 600)
                     pos_hint: {"center_x": .5, "center_y": .5}
 
                 MDRaisedButton:
                     text: "Fabricar placa"
                     size_hint: None, None
-                    size: dp(150), dp(50)
-                    pos_hint: {"center_x": .5, "center_y": .5}
-                    md_bg_color: [1, 1, 1, 0.5]  # Botón casi transparente
+                    size: dp(100), dp(50)
+                    pos_hint: {"center_x": .5, "center_y": .1}
+                    md_bg_color: [1, 1, 1, 0.5]  
                     text_color: [0, 0, 0, 1]
                     on_press: app.root.current = 'calibrar'
 
