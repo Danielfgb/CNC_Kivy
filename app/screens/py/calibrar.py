@@ -69,7 +69,7 @@ class CalibrarScreen(Screen):
     def load_dropdown_items(self):
         """Carga los ítems del dropdown desde un archivo JSON"""
         try:
-            with open('./Ci24/devices/config/coordinates_10.json', 'r') as file:
+            with open('./app/config/coordinates_10.json', 'r') as file:
                 self.data = json.load(file)
                 tags = [str(tag['tag']) for tag in self.data.get('tags', [])]
                 self.create_dropdown_items(tags)
@@ -113,7 +113,7 @@ class CalibrarScreen(Screen):
                 break
 
         # Guarda los datos actualizados en el archivo JSON
-        with open('./Ci24/devices/config/coordinates_10.json', 'w') as file:
+        with open('./app/config/coordinates_10.json', 'w') as file:
             json.dump(self.data, file, indent=4)
         
         print("Configuración guardada.")
