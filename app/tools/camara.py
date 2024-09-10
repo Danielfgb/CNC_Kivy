@@ -2,22 +2,23 @@ import cv2
 from kivy.clock import Clock
 from kivy.graphics.texture import Texture
 
-class CamaraController:
-    def __init__(self, camera_id=0, fallback_image='./app/resources/img/cam.png'):
+class CameraController:
+    def __init__(self, camera_id=0, update_interval=1.0 / 30):
         self.camera_id = camera_id
         self.capture = None
-        self.fallback_image = fallback_image
+        self.update_interval = update_interval
 
     def start_camera(self, camera_image_widget):
         """Inicia la captura de video desde la c�mara USB"""
         self.capture = cv2.VideoCapture(self.camera_id)
         if not self.capture.isOpened():
             # Si no se puede abrir la c�mara, carga la imagen predeterminada
-            camera_image_widget.source = self.fallback_image
-            return
-
+            camera_image_widget.source = './app/resources/img/cam.png'
+            return False
+        
         # Configura la actualizaci�n del frame en un intervalo regular
-        Clock.schedule_interval(lambda dt: self.update_frame(camera_image_widget), 1.0 / 30)  # 30 FPS
+        Clock.schedule_interval(lambda dt: self.update_frame(camera_image_widget), self.update_interval)
+        return True
 
     def update_frame(self, camera_image_widget):
         """Actualiza el frame de la c�mara y lo muestra en la pantalla"""
@@ -35,9 +36,9 @@ class CamaraController:
             camera_image_widget.texture = texture
         else:
             # Si no se puede capturar, muestra la imagen predeterminada
-            camera_image_widget.source = self.fallback_image
+            camera_image_widget.source = './app/resources/img/cam.png'
 
     def stop_camera(self):
-        """Libera los recursos de la c�mara"""
+        """Libera los recursos de la c�mara al detener la aplicaci�n"""
         if self.capture:
             self.capture.release()

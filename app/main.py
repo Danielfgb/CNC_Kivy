@@ -1,14 +1,17 @@
 import os
+import sys
 from kivymd.app import MDApp
 from kivy.uix.screenmanager import ScreenManager
 from kivy.lang import Builder
-from screens import InicioScreen, CalibrarScreen 
-from kivy.core.window import Window 
+from screens import InicioScreen, CalibrarScreen
+from kivy.core.window import Window
 
 class MainApp(MDApp): 
     def build(self):
+        # Asegurarse de que se pueda importar el módulo Ci24
+        sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../../')))
 
-# ROTACION DE PANTALLA PARA PRUEBAS CON MONITOR 
+        # ROTACIÓN DE PANTALLA PARA PRUEBAS CON MONITOR
         Window.rotation = 270
         #Window.size = (1024,768)
 

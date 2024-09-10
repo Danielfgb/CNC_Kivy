@@ -1,16 +1,14 @@
 from kivy.uix.screenmanager import Screen
 from kivy.clock import Clock
-from kivy.graphics.texture import Texture
 from kivy.properties import StringProperty, ListProperty
 from kivy.uix.dropdown import DropDown
 from kivy.uix.button import Button
-import cv2
 import json
+from tools.camara import CameraController
 
 class CalibrarScreen(Screen):
     current_time = StringProperty()
-    camera_id = 0  # Índice de la cámara, generalmente 0 para la cámara principal
-    capture = None
+    camera_controller = None
     dropdown = None  # Dropdown para seleccionar las placas
     selected_tag_location = ListProperty([0.0, 0.0, 0.0])  # Coordenadas actuales de la placa seleccionada
     new_location = ListProperty([0.0, 0.0, 0.0])  # Nuevas coordenadas para la placa seleccionada
@@ -19,7 +17,10 @@ class CalibrarScreen(Screen):
         super().__init__(**kwargs)
         self.update_time()
         Clock.schedule_interval(self.update_time, 1)  # Actualiza el tiempo cada segundo
-        self.start_camera()
+
+        # Iniciar cámara con controlador separado
+        self.camera_controller = CameraController(camera_id=0)
+        self.camera_controller.start_camera(self.ids.camera_image)
 
         # Configura el menú desplegable
         self.dropdown = DropDown()
@@ -30,39 +31,9 @@ class CalibrarScreen(Screen):
         from datetime import datetime
         self.current_time = datetime.now().strftime("%H:%M:%S")
 
-    def start_camera(self):
-        """Inicia la captura de video desde la cámara USB"""
-        self.capture = cv2.VideoCapture(self.camera_id)
-        if not self.capture.isOpened():
-            # Si no se puede abrir la cámara, carga la imagen predeterminada
-            self.ids.camera_image.source = './app/resources/img/cam.png'
-            return
-        
-        # Configura la actualización del frame en un intervalo regular
-        Clock.schedule_interval(self.update_frame, 1.0 / 30)  # Actualiza a 30 FPS
-
-    def update_frame(self, *args):
-        """Actualiza el frame de la cámara y lo muestra en la pantalla"""
-        ret, frame = self.capture.read()
-        if ret:
-            # Convierte el frame de BGR a RGB
-            frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-            # Gira verticalmente la imagen
-            frame = frame[::-1]
-            # Convierte la imagen a una textura de Kivy
-            texture = Texture.create(size=(frame.shape[1], frame.shape[0]), colorfmt='rgb')
-            texture.blit_buffer(frame.tobytes(), colorfmt='rgb', bufferfmt='ubyte')
-            texture.flip_vertical()
-            # Actualiza la textura en el Image de Kivy
-            self.ids.camera_image.texture = texture
-        else:
-            # Si no se puede capturar, muestra la imagen predeterminada
-            self.ids.camera_image.source = './app/resources/img/cam.png'
-
     def on_stop(self):
         """Libera los recursos de la cámara al detener la aplicación"""
-        if self.capture:
-            self.capture.release()
+        self.camera_controller.stop_camera()
 
     def go_back(self):
         self.manager.current = 'inicio'

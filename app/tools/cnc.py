@@ -5,7 +5,20 @@ class GRBLController:
     def __init__(self, port, baudrate=115200):
         self.serial = serial.Serial(port, baudrate, timeout=1)
         self.current_position = [0, 0, 0]  # X, Y, Z
-        self.max_position = [200, 200, 200]  # Máximos en X, Y, Z
+        self.max_position = [200, 200, -40]  # Máximos en X, Y, Z
+        
+        # Inicializar el controlador
+        self._initialize()
+        
+        # Configuración inicial con finales de carrera habilitados
+        self.init_grbl()
+
+    def _initialize(self):
+        """Inicializa el controlador, asegurándose de que la comunicación esté establecida."""
+        print("Inicializando el controlador GRBL...")
+        self.serial.flushInput()  # Limpiar el buffer de entrada
+        self.serial.flushOutput() # Limpiar el buffer de salida
+        time.sleep(1)  # Esperar para asegurar que la comunicación esté establecida
 
     def _send_command(self, command):
         """Envía un comando a GRBL y lee la respuesta."""
@@ -13,15 +26,54 @@ class GRBLController:
         self.serial.write(f"{command}\n".encode())
         return self.serial.readlines()
 
+    def init_grbl(self):
+        """Inicializa GRBL con la configuración proporcionada."""
+        init_commands = """
+        $0=10
+        $1=255
+        $2=0
+        $3=1
+        $4=0
+        $5=0
+        $6=0
+        $10=18
+        $11=0.010
+        $12=0.002
+        $13=0
+        $20=1    # Activa los límites duros
+        $21=0
+        $22=1
+        $23=3
+        $24=100
+        $25=2000.000
+        $26=250
+        $27=2
+        $30=1000
+        $31=0
+        $32=0
+        $100=40
+        $101=80
+        $102=120
+        $110=4000.000
+        $111=4000.000
+        $112=800
+        $120=50.000
+        $121=50.000
+        $122=50.000
+        $130=200.000
+        $131=200.000
+        $132=200.000
+        """
+        for command in init_commands.strip().split('\n'):
+            response = self._send_command(command)
+            print(f"Respuesta de GRBL al inicializar: {response}")
+
     def home(self):
         """Envía el comando para llevar los ejes a la posición home."""
         response = self._send_command('$H')
         print(f"Respuesta de GRBL: {response}")
         # Reiniciamos la posición a 0,0,0 después del home
         self.current_position = [0, 0, 0]
-
-        # Ir automáticamente a la posición [99.8, 36, 0] después de home
-        self.move_to_location([99.8, 36, 0])
 
     def move_to(self, x=None, y=None, z=None):
         """Mueve los ejes de manera incremental y actualiza la posición."""
@@ -69,7 +121,7 @@ class GRBLController:
 
             elif command == 'm':
                 # Ir al máximo [200, 200, 200]
-                self.move_to_location([200, 200, 200])
+                self.move_to_location([200, 200, -40])
 
             elif command == 'z':
                 # Ir a la ubicación específica [99.8, 36, 0]
