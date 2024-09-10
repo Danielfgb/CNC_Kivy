@@ -19,77 +19,75 @@
 
             Image:
                 id: camera_image
-                size_hint: (None, None)
-                size: (400, 300)
-                pos_hint: {"center_x": 0.25, "center_y": 0.5}
+                size_hint: (1, 1)
+                #size: (400, 300)
+                pos_hint: {"center_x": 0.5, "center_y": 0.5}
 
-            # Etiquetas mejoradas al lado de la cámara
-            MDBoxLayout:
-                orientation: 'vertical'
-                size_hint_x: 0.4
-                pos_hint: {"center_x": 0.75, "center_y": 0.5}
-                padding: 20
-                spacing: 10
+        # contenedor label valores actuales 
+        BoxLayout:
+            size_hint_y: 0.3
+            padding: 10
+            spacing: 10
 
-                # Tarjeta para las etiquetas actuales
-                MDCard:
-                    size_hint_y: None
-                    height: "150dp"
-                    padding: 10
-                    md_bg_color: [0.95, 0.95, 0.95, 1.0]  # Color de fondo de la tarjeta
+            MDCard:
+                size_hint_y: None
+                height: "100dp"
+                padding: 10
+                md_bg_color: [0.95, 0.95, 0.95, 1.0]
                     
-                    BoxLayout:
-                        orientation: 'vertical'
-                        spacing: 10
+                BoxLayout:
+                    orientation: 'vertical'
+                    spacing: 10
 
-                        MDLabel:
-                            text: "Actual"
-                            font_size: '20sp'
-                            halign: 'center'
-                            theme_text_color: "Secondary"
-                            bold: True
+                    MDLabel:
+                        text: "Actual"
+                        font_size: '20sp'
+                        halign: 'center'
+                        theme_text_color: "Secondary"
+                        bold: True
 
-                        MDLabel:
-                            text: "X: " + str(root.selected_tag_location[0])
-                            halign: 'center'
-                            
-                        MDLabel:
-                            text: "Y: " + str(root.selected_tag_location[1])
-                            halign: 'center'
-                            
-                        MDLabel:
-                            text: "Z: " + str(root.selected_tag_location[2])
-                            halign: 'center'
+                    MDLabel:
+                        text: "X: " + str(root.selected_tag_location[0])
+                        halign: 'center'
+                        
+                    MDLabel:
+                        text: "Y: " + str(root.selected_tag_location[1])
+                        halign: 'center'
+                        
+                    MDLabel:
+                        text: "Z: " + str(root.selected_tag_location[2])
+                        halign: 'center'
 
-                # Tarjeta para las nuevas etiquetas
-                MDCard:
-                    size_hint_y: None
-                    height: "150dp"
-                    padding: 10
-                    md_bg_color: [0.95, 0.95, 0.95, 1.0]  # Color de fondo de la tarjeta
+            # Tarjeta para las nuevas etiquetas
+            MDCard:
+                size_hint_y: None
+                height: "100dp"
+                padding: 10
+                md_bg_color: [0.95, 0.95, 0.95, 1.0]
 
-                    BoxLayout:
-                        orientation: 'vertical'
-                        spacing: 10
+                BoxLayout:
+                    orientation: 'vertical'
+                    spacing: 10
 
-                        MDLabel:
-                            text: "Nuevo"
-                            font_size: '20sp'
-                            halign: 'center'
-                            theme_text_color: "Secondary"
-                            bold: True
+                    MDLabel:
+                        text: "Nuevo"
+                        font_size: '20sp'
+                        halign: 'center'
+                        theme_text_color: "Secondary"
+                        bold: True
 
-                        MDLabel:
-                            text: "X: " + str(root.new_location[0])
-                            halign: 'center'
-                            
-                        MDLabel:
-                            text: "Y: " + str(root.new_location[1])
-                            halign: 'center'
-                            
-                        MDLabel:
-                            text: "Z: " + str(root.new_location[2])
-                            halign: 'center'
+                    MDLabel:
+                        text: "X: " + str(root.new_location[0])
+                        halign: 'center'
+                        
+                    MDLabel:
+                        text: "Y: " + str(root.new_location[1])
+                        halign: 'center'
+                        
+                    MDLabel:
+                        text: "Z: " + str(root.new_location[2])
+                        halign: 'center'
+
 
         # Contenedor para los botones de movimiento de ejes X e Y
         BoxLayout:
