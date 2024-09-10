@@ -1,2 +1,4 @@
 /venv/
 /kivy_venv/
+__pycache__/
+app/screens/__pycache__/
