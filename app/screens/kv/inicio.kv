@@ -31,6 +31,7 @@
                 MDRaisedButton:
                     text: "Fabricar placa"
                     size_hint: None, None
+                    elevation: 0
                     size: dp(100), dp(50)
                     pos_hint: {"center_x": .5, "center_y": .1}
                     md_bg_color: [1, 1, 1, 0.5]  
@@ -40,6 +41,7 @@
             MDFillRoundFlatIconButton:
                 text: "Calibrar"    
                 icon: "cog"
+                elevation: 0
                 on_press: app.root.current = 'calibrar'
                 size_hint: None, None
                 size: dp(200), dp(50)  

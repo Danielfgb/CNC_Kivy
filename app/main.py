@@ -2,10 +2,16 @@ import os
 from kivymd.app import MDApp
 from kivy.uix.screenmanager import ScreenManager
 from kivy.lang import Builder
-from screens import InicioScreen, CalibrarScreen  
+from screens import InicioScreen, CalibrarScreen 
+from kivy.core.window import Window 
 
 class MainApp(MDApp): 
     def build(self):
+
+# ROTACION DE PANTALLA PARA PRUEBAS CON MONITOR 
+        Window.rotation = 270
+        #Window.size = (1024,768)
+
         self.load_all_kv_files("./app/screens/kv")
 
         sm = ScreenManager()

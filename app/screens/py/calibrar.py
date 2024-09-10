@@ -1,7 +1,7 @@
 from kivy.uix.screenmanager import Screen
 from kivy.clock import Clock
 from kivy.graphics.texture import Texture
-from kivy.properties import StringProperty
+from kivy.properties import StringProperty, ListProperty
 from kivy.uix.dropdown import DropDown
 from kivy.uix.button import Button
 import cv2
@@ -12,6 +12,8 @@ class CalibrarScreen(Screen):
     camera_id = 0  # Índice de la cámara, generalmente 0 para la cámara principal
     capture = None
     dropdown = None  # Dropdown para seleccionar las placas
+    selected_tag_location = ListProperty([0.0, 0.0, 0.0])  # Coordenadas actuales de la placa seleccionada
+    new_location = ListProperty([0.0, 0.0, 0.0])  # Nuevas coordenadas para la placa seleccionada
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -21,6 +23,7 @@ class CalibrarScreen(Screen):
 
         # Configura el menú desplegable
         self.dropdown = DropDown()
+        self.data = {}  # Variable para cargar los datos del JSON
         self.load_dropdown_items()  # Carga los datos del JSON para el dropdown
 
     def update_time(self, *args):
@@ -82,12 +85,22 @@ class CalibrarScreen(Screen):
         self.ids.dropdown_button.text = value
         self.dropdown.dismiss()
 
+        # Busca la ubicación en el JSON
+        tag_data = next((tag for tag in self.data['tags'] if str(tag['tag']) == value), None)
+        if tag_data:
+            location = tag_data.get('location', [0.0, 0.0, 0.0])  # Asegúrate de que tiene 3 valores
+            if len(location) == 2:  # Si solo tiene x e y
+                location.append(0.0)  # Añade z = 0.0 si falta
+            self.selected_tag_location = location
+            self.new_location = location.copy()  # Copia los valores para permitir modificación sin afectar los originales
+            print(f"Ubicación seleccionada: {self.selected_tag_location}")  # Debug
+
     def load_dropdown_items(self):
         """Carga los ítems del dropdown desde un archivo JSON"""
         try:
             with open('./Ci24/devices/config/coordinates_10.json', 'r') as file:
-                data = json.load(file)
-                tags = [str(tag['tag']) for tag in data.get('tags', [])]
+                self.data = json.load(file)
+                tags = [str(tag['tag']) for tag in self.data.get('tags', [])]
                 self.create_dropdown_items(tags)
         except FileNotFoundError:
             print("Archivo JSON no encontrado.")
@@ -96,22 +109,40 @@ class CalibrarScreen(Screen):
 
     # Métodos para mover los ejes
     def move_x_positive(self):
-        print("Mover eje X positivo")
+        self.new_location[0] += 0.5
+        print("Mover eje X positivo:", self.new_location[0])  # Debug para ver el valor actualizado
 
     def move_x_negative(self):
-        print("Mover eje X negativo")
-    
+        self.new_location[0] -= 0.5
+        print("Mover eje X negativo:", self.new_location[0])
+
     def move_y_positive(self):
-        print("Mover eje Y positivo")
-    
+        self.new_location[1] += 0.5
+        print("Mover eje Y positivo:", self.new_location[1])
+
     def move_y_negative(self):
-        print("Mover eje Y negativo")
+        self.new_location[1] -= 0.5
+        print("Mover eje Y negativo:", self.new_location[1])
 
     def move_z_positive(self):
-        print("Mover eje Z positivo")
-    
+        self.new_location[2] += 0.5
+        print("Mover eje Z positivo:", self.new_location[2])
+
     def move_z_negative(self):
-        print("Mover eje Z negativo")
+        self.new_location[2] -= 0.5
+        print("Mover eje Z negativo:", self.new_location[2])
 
     def save_settings(self):
-        print("Guardar configuración")
+        print(f"Guardando la nueva ubicación: {self.new_location}")
+        
+        # Busca el tag seleccionado en los datos
+        for tag in self.data['tags']:
+            if str(tag['tag']) == self.ids.dropdown_button.text:
+                tag['location'] = self.new_location  # Actualiza con los nuevos valores
+                break
+
+        # Guarda los datos actualizados en el archivo JSON
+        with open('./Ci24/devices/config/coordinates_10.json', 'w') as file:
+            json.dump(self.data, file, indent=4)
+        
+        print("Configuración guardada.")
