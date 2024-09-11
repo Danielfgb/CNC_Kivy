@@ -7,6 +7,7 @@ class CameraController:
         self.camera_id = camera_id
         self.capture = None
         self.update_interval = update_interval
+        self.cross_position = None  # Permite ajustar la posici�n de la cruz
 
     def start_camera(self, camera_image_widget):
         """Inicia la captura de video desde la c�mara USB"""
@@ -26,6 +27,9 @@ class CameraController:
         if ret:
             # Convierte el frame de BGR a RGB
             frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+            # A�adir la cruz en la imagen
+            self.draw_cross(frame)
+
             # Gira verticalmente la imagen
             frame = frame[::-1]
             # Convierte la imagen a una textura de Kivy
@@ -37,6 +41,20 @@ class CameraController:
         else:
             # Si no se puede capturar, muestra la imagen predeterminada
             camera_image_widget.source = './app/resources/img/cam.png'
+
+    def draw_cross(self, frame, color=(255, 0, 0), thickness=2):
+        """Dibuja una cruz en la imagen"""
+        h, w, _ = frame.shape
+        # Si no se ha definido una posici�n, se dibuja en el centro
+        cx, cy = (w // 2, h // 2) if self.cross_position is None else self.cross_position
+
+        # L�neas de la cruz
+        cv2.line(frame, (cx - 30, cy), (cx + 30, cy), color, thickness)
+        cv2.line(frame, (cx, cy - 30), (cx, cy + 30), color, thickness)
+
+    def set_cross_position(self, x, y):
+        """Establece la posici�n de la cruz"""
+        self.cross_position = (x, y)
 
     def stop_camera(self):
         """Libera los recursos de la c�mara al detener la aplicaci�n"""

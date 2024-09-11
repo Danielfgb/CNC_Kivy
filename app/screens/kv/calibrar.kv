@@ -11,7 +11,7 @@
             left_action_items: [["arrow-left-bold", lambda x: root.go_back(), "INICIO"]]
             elevation: 0
             md_bg_color: [0.855, 0.435, 0.0, 1.0]
-
+        
         # Recuadro de imagen o stream
         FloatLayout:
             size_hint_y: 0.5
@@ -19,13 +19,13 @@
 
             Image:
                 id: camera_image
-                size_hint: (1, 1)
+                size_hint: (1.2, 1.2)
                 #size: (400, 300)
-                pos_hint: {"center_x": 0.5, "center_y": 0.5}
+                pos_hint: {"center_x": 0.5, "center_y": 0.4}
 
         # contenedor label valores actuales 
         BoxLayout:
-            size_hint_y: 0.3
+            size_hint_y: 0.2
             padding: 10
             spacing: 10
 
@@ -40,7 +40,7 @@
                     spacing: 10
 
                     MDLabel:
-                        text: "Actual"
+                        text: "Posición tag"
                         font_size: '20sp'
                         halign: 'center'
                         theme_text_color: "Secondary"
@@ -70,7 +70,7 @@
                     spacing: 10
 
                     MDLabel:
-                        text: "Nuevo"
+                        text: "Posición actual"
                         font_size: '20sp'
                         halign: 'center'
                         theme_text_color: "Secondary"
