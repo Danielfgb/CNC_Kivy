@@ -12,7 +12,13 @@ class CalibrarScreen(Screen):
     camera_controller = None
     dropdown = None
     selected_tag_location = ListProperty([0.0, 0.0, 0.0])  # Coordenadas del tag seleccionado
-    new_location = ListProperty([0.0, 0.0, 0.0])  # Nuevas coordenadas para el movimiento
+    new_location = ListProperty([0.0, 0.0, 0.0])  # Nuevas coordenadas para el movimiento manual
+
+    # Límites de los ejes
+    MAX_X = 200.0
+    MAX_Y = 200.0
+    MIN_Z = -85.0  # Eje Z invertido: home es 0 y el máximo es -85
+    MIN_XY = 0.0  # El mínimo para X e Y es 0
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -30,7 +36,11 @@ class CalibrarScreen(Screen):
 
         # Conectar con el controlador CNC
         self.cnc = CNCController(['/dev/ttyUSB0', '/dev/ttyUSB1'])
+
+    def on_enter(self):
+        """Al entrar en la pantalla de calibración, ir a home."""
         self.cnc.connect()
+        self.cnc.go_home()  # Ir a home al entrar a la ventana
 
     def update_time(self, *args):
         from datetime import datetime
@@ -69,6 +79,9 @@ class CalibrarScreen(Screen):
             self.new_location = location.copy()
             print(f"Ubicación seleccionada: {self.selected_tag_location}")
 
+            # Mover a la posición del tag seleccionado
+            self.move_to_tag()
+
     def load_dropdown_items(self):
         """Carga los ítems del dropdown desde un archivo JSON."""
         try:
@@ -81,41 +94,63 @@ class CalibrarScreen(Screen):
         except json.JSONDecodeError:
             print("Error al decodificar el archivo JSON.")
 
-    # Métodos para mover los ejes
+    # Métodos para mover los ejes manualmente
     def move_x_positive(self):
-        self.new_location[0] += 20
+        if self.new_location[0] + 20 <= self.MAX_X:
+            self.new_location[0] += 20
+        else:
+            self.new_location[0] = self.MAX_X
         self.cnc.move_to(x=self.new_location[0])
-        print("Mover eje X positivo:", self.new_location[0])
+        print(f"Moviendo eje X positivo a: {self.new_location[0]}")
 
     def move_x_negative(self):
-        self.new_location[0] -= 20
+        if self.new_location[0] - 20 >= self.MIN_XY:
+            self.new_location[0] -= 20
+        else:
+            self.new_location[0] = self.MIN_XY
         self.cnc.move_to(x=self.new_location[0])
-        print("Mover eje X negativo:", self.new_location[0])
+        print(f"Moviendo eje X negativo a: {self.new_location[0]}")
 
     def move_y_positive(self):
-        self.new_location[1] += 20
+        if self.new_location[1] + 20 <= self.MAX_Y:
+            self.new_location[1] += 20
+        else:
+            self.new_location[1] = self.MAX_Y
         self.cnc.move_to(y=self.new_location[1])
-        print("Mover eje Y positivo:", self.new_location[1])
+        print(f"Moviendo eje Y positivo a: {self.new_location[1]}")
 
     def move_y_negative(self):
-        self.new_location[1] -= 20
+        if self.new_location[1] - 20 >= self.MIN_XY:
+            self.new_location[1] -= 20
+        else:
+            self.new_location[1] = self.MIN_XY
         self.cnc.move_to(y=self.new_location[1])
-        print("Mover eje Y negativo:", self.new_location[1])
+        print(f"Moviendo eje Y negativo a: {self.new_location[1]}")
 
     def move_z_positive(self):
-        self.new_location[2] += 20
+        if self.new_location[2] + 20 <= 0:  # El límite superior es 0
+            self.new_location[2] += 20
+        else:
+            self.new_location[2] = 0
         self.cnc.move_to(z=self.new_location[2])
-        print("Mover eje Z positivo:", self.new_location[2])
+        print(f"Moviendo eje Z positivo a: {self.new_location[2]}")
 
     def move_z_negative(self):
-        self.new_location[2] -= 20
+        if self.new_location[2] - 20 >= self.MIN_Z:
+            self.new_location[2] -= 20
+        else:
+            self.new_location[2] = self.MIN_Z
         self.cnc.move_to(z=self.new_location[2])
-        print("Mover eje Z negativo:", self.new_location[2])
+        print(f"Moviendo eje Z negativo a: {self.new_location[2]}")
 
     def move_to_tag(self):
         """Envía las coordenadas del tag seleccionado al CNC para que se mueva a dicha posición."""
-        self.cnc.move_to_tag(self.selected_tag_location)
-        print(f"Moviendo a la posición del tag: {self.selected_tag_location}")
+        if self.selected_tag_location:
+            x, y, z = self.selected_tag_location
+            self.cnc.move_to(x=x, y=y, z=z)
+            print(f"Moviendo a la posición del tag: X={x}, Y={y}, Z={z}")
+        else:
+            print("No se ha seleccionado un tag o las coordenadas están incompletas.")
 
     def save_settings(self):
         print(f"Guardando la nueva ubicación: {self.new_location}")

@@ -21,15 +21,12 @@ class CNCController:
         if not self.grbl:
             raise Exception("No se pudo conectar a ningún puerto serial.")
 
-        # Resetear GRBL y desbloquear con $X
+        # Resetear GRBL
         self.grbl.write(b"\r\n\r\n")
         time.sleep(2)
         self.grbl.flushInput()
 
-        # Desbloquear GRBL con $X
-        self.send_command("$X")
-
-        # Inicializar GRBL con los parámetros estándar
+        # Inicializar GRBL con los parámetros
         self.initialize_grbl()
 
     def initialize_grbl(self):
@@ -55,9 +52,11 @@ class CNCController:
         return self.grbl.readline().strip()
 
     def go_home(self):
-        """Mueve la máquina a la posición home."""
-        self.send_command("$H")
-        print("Moviendo a la posición de home...")
+        """Mueve la máquina a la posición home y desbloquea después."""
+        self.send_command("$H")  # Enviar homing
+        time.sleep(2)  # Esperar que se complete el homing
+        self.send_command("$X")  # Desbloquear después del homing
+        print("Movido a home y desbloqueado.")
 
     def move_to(self, x=None, y=None, z=None):
         """Mueve los ejes a las coordenadas especificadas."""
@@ -86,3 +85,4 @@ class CNCController:
         if self.grbl:
             self.grbl.close()
             print("Conexión cerrada.")
+
