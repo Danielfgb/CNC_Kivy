@@ -9,7 +9,7 @@ import time
 GPIO.setmode(GPIO.BCM)
 
 # Definir los pines GPIO que controlan los relés
-RELE_PINS = [7, 3, 22, 25]
+RELE_PINS = [4, 22, 6, 26]
 
 # Configurar los pines como salida
 for pin in RELE_PINS:

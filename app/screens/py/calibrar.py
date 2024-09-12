@@ -1,4 +1,4 @@
-from kivy.uix.screenmanager import Screen
+from kivy.uix.screenmanager import Screen, ScreenManager
 from kivy.clock import Clock
 from kivy.properties import StringProperty, ListProperty
 from kivy.uix.dropdown import DropDown
@@ -166,3 +166,6 @@ class CalibrarScreen(Screen):
             json.dump(self.data, file, indent=4)
         
         print("Configuración guardada.")
+
+    def go_home(self):
+        self.cnc.go_home()
