@@ -3,7 +3,10 @@ from kivy.clock import Clock
 from kivy.properties import StringProperty, ListProperty
 from kivy.uix.dropdown import DropDown
 from kivy.uix.button import Button
+
 import json
+import shutil
+
 from tools.camara import CameraController
 from tools.cnc import CNCController  # Importa CNCController desde app/tools/cnc.py
 
@@ -167,5 +170,17 @@ class CalibrarScreen(Screen):
         
         print("Configuración guardada.")
 
+######################################33
+
     def go_home(self):
         self.cnc.go_home()
+
+    def reset_coordinates(self):
+        """Restablece las coordenadas copiando el contenido del archivo JSON backup."""
+        backup_file = './app/config/coordinates_10 copy.json'
+        target_file = './app/config/coordinates_10.json'
+        try:
+            shutil.copyfile(backup_file, target_file)
+            print(f"Coordenadas restablecidas desde {backup_file}")
+        except Exception as e:
+            print(f"Error al restablecer coordenadas: {e}")

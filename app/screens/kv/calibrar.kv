@@ -197,13 +197,14 @@
 
                 MDNavigationDrawerHeader:
                     title: "Configuración"
+                    icon:"cogs"
                     title_color: "#4a4939"
-                    text: "Header text"
+                    text: "Configuración calibración"
                     spacing: "4dp"
                     padding: "12dp", 0, 0, "56dp"
 
-                MDNavigationDrawerLabel:
-                    text: "conf"
+                # MDNavigationDrawerLabel:
+                #     text: "Configuración"
 
                 OneLineIconListItem:
                     text: "Ir a home"
@@ -215,5 +216,22 @@
                     text: "Restablecer coordenadas"
                     IconLeftWidget:
                         icon: "restore"
-                        #on_release: root.reset_coordinates()               
+                        on_release: root.reset_coordinates()   
 
+                OneLineIconListItem:
+                    text: "Modificar Recorrido"
+                    IconLeftWidget:
+                        icon: "pencil"
+                        #on_release: root.modify_travel_distance()     
+
+                OneLineIconListItem:
+                    text: "Dispensar Placa"
+                    IconLeftWidget:
+                        icon: "clipboard-text"
+                        #on_release: root.                 
+
+                OneLineIconListItem:
+                    text: "Comandos de Test"
+                    IconLeftWidget:
+                        icon: "tools"
+                        #on_release: root.     
