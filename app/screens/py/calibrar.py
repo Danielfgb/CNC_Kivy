@@ -8,11 +8,13 @@ import json
 import shutil
 
 from tools.camara import CameraController
-from tools.cnc import CNCController  # Importa CNCController desde app/tools/cnc.py
+from tools.cnc import CNCController  
+from tools.GPIO import GPIOController
 
 class CalibrarScreen(Screen):
     current_time = StringProperty()
     camera_controller = None
+    gpio_controller = None
     dropdown = None
     selected_tag_location = ListProperty([0.0, 0.0, 0.0])  # Coordenadas del tag seleccionado
     new_location = ListProperty([0.0, 0.0, 0.0])  # Nuevas coordenadas para el movimiento manual
@@ -40,10 +42,15 @@ class CalibrarScreen(Screen):
         # Conectar con el controlador CNC
         self.cnc = CNCController(['/dev/ttyUSB0', '/dev/ttyUSB1'])
 
+        self.gpio_controller = GPIOController()
+        self.controladora = True
+
     def on_enter(self):
         """Al entrar en la pantalla de calibración, ir a home."""
+        if self.controladora:  # Verificar si la variable controladora es True
+            self.gpio_controller.activate_cnc()
         self.cnc.connect()
-        self.cnc.go_home()  # Ir a home al entrar a la ventana
+        self.cnc.go_home()
 
     def update_time(self, *args):
         from datetime import datetime
@@ -52,9 +59,11 @@ class CalibrarScreen(Screen):
     def on_stop(self):
         """Libera los recursos de la cámara al detener la aplicación."""
         self.camera_controller.stop_camera()
+        self.gpio_controller.cleanup()
 
     def go_back(self):
         self.manager.current = 'inicio'
+        self.gpio_controller.deactivate_cnc()
 
     def show_dropdown(self):
         """Abre el dropdown cuando se hace clic en el botón."""
