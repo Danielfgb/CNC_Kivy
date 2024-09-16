@@ -159,8 +159,9 @@ class CalibrarScreen(Screen):
         """Envía las coordenadas del tag seleccionado al CNC para que se mueva a dicha posición."""
         if self.selected_tag_location:
             x, y, z = self.selected_tag_location
-            self.cnc.move_to(x=x, y=y, z=z)
-            print(f"Moviendo a la posición del tag: X={x}, Y={y}, Z={z}")
+            self.cnc.move_to(x=x, y=y, z=0)
+            self.new_location = [x, y, 0]
+            print(f"Moviendo a la posición del tag: X={x}, Y={y}, Z={0}")
         else:
             print("No se ha seleccionado un tag o las coordenadas están incompletas.")
 
@@ -183,6 +184,7 @@ class CalibrarScreen(Screen):
 
     def go_home(self):
         self.cnc.go_home()
+        self.new_location = [0.0, 0.0, 0.0]
 
     def reset_coordinates(self):
         """Restablece las coordenadas copiando el contenido del archivo JSON backup."""

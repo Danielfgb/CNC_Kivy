@@ -6,13 +6,14 @@ class CNCController:
         self.serial_ports = serial_ports
         self.baud_rate = baud_rate
         self.grbl = None
+        self.home_executed = False  # Para controlar si ya se fue a home la primera vez
 
     def connect(self):
         """Establece conexión con la CNC buscando en los puertos disponibles."""
         for port in self.serial_ports:
             try:
                 self.grbl = serial.Serial(port, self.baud_rate)
-                time.sleep(2)  # Esperar a que GRBL inicie
+                time.sleep(2)  
                 print(f"Conectado a GRBL en {port}")
                 break
             except serial.SerialException:
@@ -21,7 +22,7 @@ class CNCController:
         if not self.grbl:
             raise Exception("No se pudo conectar a ningún puerto serial.")
 
-        # Resetear GRBL
+        # Resetear GRBL y desbloquear solo la primera vez
         self.grbl.write(b"\r\n\r\n")
         time.sleep(2)
         self.grbl.flushInput()
@@ -46,17 +47,25 @@ class CNCController:
             time.sleep(0.1)
 
     def send_command(self, command):
-        """Envía un comando a GRBL."""
+        """Envía un comando a GRBL e imprime el comando enviado."""
+        print(f"Enviando comando: {command}")
         self.grbl.write(f"{command}\n".encode())
         time.sleep(0.1)
         return self.grbl.readline().strip()
 
     def go_home(self):
-        """Mueve la máquina a la posición home y desbloquea después."""
-        self.send_command("$H")  # Enviar homing
-        time.sleep(2)  # Esperar que se complete el homing
-        self.send_command("$X")  # Desbloquear después del homing
-        print("Movido a home y desbloqueado.")
+        """Mueve la máquina a la posición home."""
+        if not self.home_executed:
+            # Ir a home solo la primera vez
+            self.send_command("$H")  # Enviar homing
+            time.sleep(2)  # Esperar que se complete el homing
+            self.send_command("$X")  # Desbloquear después del homing
+            self.send_command("G92 X0 Y0 Z0")  # Establecer posición cero en la máquina
+            self.home_executed = True
+            print("Movido a home y desbloqueado.")
+        else:
+            # En siguientes ocasiones, mover directamente a la posición (0,0,0)
+            self.move_to(x=0, y=0, z=0)
 
     def move_to(self, x=None, y=None, z=None):
         """Mueve los ejes a las coordenadas especificadas."""
@@ -74,15 +83,44 @@ class CNCController:
         """Mueve los ejes a la ubicación de un tag evitando colisiones."""
         x, y, z = tag_location
 
-        # Primero mueve los ejes X e Y, luego el eje Z
-        self.move_to(x=x, y=y)
-        time.sleep(2)  # Esperar a que se complete el movimiento de X e Y
-        self.move_to(z=z)
-        time.sleep(2)  # Esperar a que se complete el movimiento de Z
+        # Mueve primero los ejes X e Y
+        if x is not None or y is not None:
+            self.move_to(x=x, y=y)  # Mover X e Y juntos
+            print(f"Moviendo primero a X={x}, Y={y}...")
+            # Esperar hasta que los ejes X e Y hayan alcanzado la posición
+            self.wait_for_position_reached(x=x, y=y)
+
+        # Luego mueve el eje Z
+        if z is not None:
+            self.move_to(z=z)  # Mover Z después
+            print(f"Moviendo luego a Z={z}...")
+            self.wait_for_position_reached(z=z)
+
+    def wait_for_position_reached(self, x=None, y=None, z=None):
+        """Espera hasta que los ejes hayan alcanzado las coordenadas indicadas."""
+        while True:
+            status = self.send_command("?")  # Obtener el estado de la máquina
+            pos_str = status.decode().split('|')[1].replace('MPos:', '')
+            positions = list(map(float, pos_str.split(',')))  # Convertir la posición en floats
+
+            current_x, current_y, current_z = positions[0], positions[1], positions[2]
+
+            # Verificar si X e Y (o Z) han alcanzado las coordenadas deseadas
+            if (x is None or abs(current_x - x) < 0.01) and \
+            (y is None or abs(current_y - y) < 0.01) and \
+            (z is None or abs(current_z - z) < 0.01):
+                break  # Si todas las coordenadas han sido alcanzadas, salir del bucle
+
+            time.sleep(0.1)  # Esperar antes de verificar nuevamente
+
+
+    def stop_all(self):
+        """Función para detener todo movimiento de la CNC inmediatamente."""
+        self.send_command("!")  # Feed hold para detener todos los movimientos de inmediato
+        print("Movimiento detenido inmediatamente.")
 
     def disconnect(self):
         """Cierra la conexión serial con GRBL."""
         if self.grbl:
             self.grbl.close()
             print("Conexión cerrada.")
-
