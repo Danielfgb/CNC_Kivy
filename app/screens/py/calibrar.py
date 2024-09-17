@@ -1,9 +1,12 @@
 from kivy.uix.screenmanager import Screen
 from kivy.clock import Clock
-from kivy.properties import StringProperty, ListProperty
+from kivy.properties import NumericProperty, StringProperty, ListProperty
 from kivymd.uix.menu import MDDropdownMenu
 from kivy.metrics import dp
 from kivymd.uix.dialog import MDDialog
+
+from kivymd.uix.button import MDFlatButton 
+from kivy.uix.boxlayout import BoxLayout
 
 import json
 import shutil
@@ -72,20 +75,23 @@ class CalibrarScreen(Screen):
         self.dialog.open()
 
     def update_travel_distance(self, *args):
-        # Obtener valores de los TextField en el diálogo
-        x_y_value = float(self.dialog.content_cls.ids.x_y_field.text)
+        try:
+            # Obtener el valor ingresado en el campo de texto del diálogo
+            x_y_value = float(self.dialog.content_cls.ids.x_y_field.text)
 
-        # Validar que los valores estén entre 0 y 200
-        if 0 <= x_y_value <= 200:
-            self.travel_distance_x_y = x_y_value
-            print(f"Nuevo valor de recorrido para X e Y: {self.travel_distance_x_y} mm")
-            self.travel_distance_z = 10  # Mantener Z fijo en 10 mm
-        else:
-            print("El valor de recorrido debe estar entre 0 y 200 mm")
+            # Validar que los valores estén entre 0 y 200
+            if 0 <= x_y_value <= 200:
+                self.travel_distance_x_y = x_y_value
+                print(f"Nuevo valor de recorrido para X e Y: {self.travel_distance_x_y} mm")
+                self.travel_distance_z = 10  # Mantener Z fijo en 10 mm
+            else:
+                print("El valor de recorrido debe estar entre 0 y 200 mm")
+        except ValueError:
+            print("Valor inválido, por favor ingrese un número válido")
 
         # Cerrar el diálogo
         self.dialog.dismiss()
-
+        
     def stop_all_movement(self):
         """Detiene todo el movimiento de la CNC"""
         self.cnc.stop_all() 
@@ -201,50 +207,34 @@ class CalibrarScreen(Screen):
             print(f"Error al restablecer coordenadas: {e}")
 
     # Métodos para mover los ejes manualmente
-    def move_x_positive(self):
-        if self.new_location[0] + 20 <= self.MAX_X:
-            self.new_location[0] += 20
-        else:
-            self.new_location[0] = self.MAX_X
-        self.cnc.move_to(x=self.new_location[0])
-        print(f"Moviendo eje X positivo a: {self.new_location[0]}")
+def move_x_positive(self):
+    if self.new_location[0] + self.travel_distance_x_y <= self.MAX_X:
+        self.new_location[0] += self.travel_distance_x_y
+    else:
+        self.new_location[0] = self.MAX_X
+    self.cnc.move_to(x=self.new_location[0])
+    print(f"Moviendo eje X positivo a: {self.new_location[0]}")
 
-    def move_x_negative(self):
-        if self.new_location[0] - 20 >= self.MIN_XY:
-            self.new_location[0] -= 20
-        else:
-            self.new_location[0] = self.MIN_XY
-        self.cnc.move_to(x=self.new_location[0])
-        print(f"Moviendo eje X negativo a: {self.new_location[0]}")
+def move_x_negative(self):
+    if self.new_location[0] - self.travel_distance_x_y >= self.MIN_XY:
+        self.new_location[0] -= self.travel_distance_x_y
+    else:
+        self.new_location[0] = self.MIN_XY
+    self.cnc.move_to(x=self.new_location[0])
+    print(f"Moviendo eje X negativo a: {self.new_location[0]}")
 
-    def move_y_positive(self):
-        if self.new_location[1] + 20 <= self.MAX_Y:
-            self.new_location[1] += 20
-        else:
-            self.new_location[1] = self.MAX_Y
-        self.cnc.move_to(y=self.new_location[1])
-        print(f"Moviendo eje Y positivo a: {self.new_location[1]}")
+def move_y_positive(self):
+    if self.new_location[1] + self.travel_distance_x_y <= self.MAX_Y:
+        self.new_location[1] += self.travel_distance_x_y
+    else:
+        self.new_location[1] = self.MAX_Y
+    self.cnc.move_to(y=self.new_location[1])
+    print(f"Moviendo eje Y positivo a: {self.new_location[1]}")
 
-    def move_y_negative(self):
-        if self.new_location[1] - 20 >= self.MIN_XY:
-            self.new_location[1] -= 20
-        else:
-            self.new_location[1] = self.MIN_XY
-        self.cnc.move_to(y=self.new_location[1])
-        print(f"Moviendo eje Y negativo a: {self.new_location[1]}")
-
-    def move_z_positive(self):
-        if self.new_location[2] + 20 <= 0:  # El límite superior es 0
-            self.new_location[2] += 20
-        else:
-            self.new_location[2] = 0
-        self.cnc.move_to(z=self.new_location[2])
-        print(f"Moviendo eje Z positivo a: {self.new_location[2]}")
-
-    def move_z_negative(self):
-        if self.new_location[2] - 20 >= self.MIN_Z:
-            self.new_location[2] -= 20
-        else:
-            self.new_location[2] = self.MIN_Z
-        self.cnc.move_to(z=self.new_location[2])
-        print(f"Moviendo eje Z negativo a: {self.new_location[2]}")
+def move_y_negative(self):
+    if self.new_location[1] - self.travel_distance_x_y >= self.MIN_XY:
+        self.new_location[1] -= self.travel_distance_x_y
+    else:
+        self.new_location[1] = self.MIN_XY
+    self.cnc.move_to(y=self.new_location[1])
+    print(f"Moviendo eje Y negativo a: {self.new_location[1]}")
