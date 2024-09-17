@@ -43,6 +43,11 @@ class CalibrarScreen(Screen):
         self.gpio_controller = GPIOController()
         self.controladora = True
 
+    def toggle_zoom(self):
+        """Alterna el estado de zoom de la cámara."""
+        self.camera_controller.toggle_zoom()
+        print("zoom")
+
     def on_enter(self):
         """Al entrar en la pantalla de calibración, ir a home."""
         if self.controladora:  # Verificar si la variable controladora es True
