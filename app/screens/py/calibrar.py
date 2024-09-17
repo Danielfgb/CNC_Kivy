@@ -207,34 +207,51 @@ class CalibrarScreen(Screen):
             print(f"Error al restablecer coordenadas: {e}")
 
     # Métodos para mover los ejes manualmente
-def move_x_positive(self):
-    if self.new_location[0] + self.travel_distance_x_y <= self.MAX_X:
-        self.new_location[0] += self.travel_distance_x_y
-    else:
-        self.new_location[0] = self.MAX_X
-    self.cnc.move_to(x=self.new_location[0])
-    print(f"Moviendo eje X positivo a: {self.new_location[0]}")
+    def move_x_positive(self):
+        if self.new_location[0] + self.travel_distance_x_y <= self.MAX_X:
+            self.new_location[0] += self.travel_distance_x_y
+        else:
+            self.new_location[0] = self.MAX_X
+        self.cnc.move_to(x=self.new_location[0])
+        print(f"Moviendo eje X positivo a: {self.new_location[0]}")
 
-def move_x_negative(self):
-    if self.new_location[0] - self.travel_distance_x_y >= self.MIN_XY:
-        self.new_location[0] -= self.travel_distance_x_y
-    else:
-        self.new_location[0] = self.MIN_XY
-    self.cnc.move_to(x=self.new_location[0])
-    print(f"Moviendo eje X negativo a: {self.new_location[0]}")
+    def move_x_negative(self):
+        if self.new_location[0] - self.travel_distance_x_y >= self.MIN_XY:
+            self.new_location[0] -= self.travel_distance_x_y
+        else:
+            self.new_location[0] = self.MIN_XY
+        self.cnc.move_to(x=self.new_location[0])
+        print(f"Moviendo eje X negativo a: {self.new_location[0]}")
 
-def move_y_positive(self):
-    if self.new_location[1] + self.travel_distance_x_y <= self.MAX_Y:
-        self.new_location[1] += self.travel_distance_x_y
-    else:
-        self.new_location[1] = self.MAX_Y
-    self.cnc.move_to(y=self.new_location[1])
-    print(f"Moviendo eje Y positivo a: {self.new_location[1]}")
+    def move_y_positive(self):
+        if self.new_location[1] + self.travel_distance_x_y <= self.MAX_Y:
+            self.new_location[1] += self.travel_distance_x_y
+        else:
+            self.new_location[1] = self.MAX_Y
+        self.cnc.move_to(y=self.new_location[1])
+        print(f"Moviendo eje Y positivo a: {self.new_location[1]}")
 
-def move_y_negative(self):
-    if self.new_location[1] - self.travel_distance_x_y >= self.MIN_XY:
-        self.new_location[1] -= self.travel_distance_x_y
-    else:
-        self.new_location[1] = self.MIN_XY
-    self.cnc.move_to(y=self.new_location[1])
-    print(f"Moviendo eje Y negativo a: {self.new_location[1]}")
+    def move_y_negative(self):
+        if self.new_location[1] - self.travel_distance_x_y >= self.MIN_XY:
+            self.new_location[1] -= self.travel_distance_x_y
+        else:
+            self.new_location[1] = self.MIN_XY
+        self.cnc.move_to(y=self.new_location[1])
+        print(f"Moviendo eje Y negativo a: {self.new_location[1]}")
+
+    def move_z_positive(self):
+        if self.new_location[2] + self.travel_distance_z <= 0:  
+            self.new_location[2] += self.travel_distance_z
+        else:
+            self.new_location[2] = 0
+        self.cnc.move_to(z=self.new_location[2])
+        print(f"Moviendo eje Z positivo a: {self.new_location[2]}")
+
+    # Mover eje Z negativo
+    def move_z_negative(self):
+        if self.new_location[2] - self.travel_distance_z >= self.MIN_Z:
+            self.new_location[2] -= self.travel_distance_z
+        else:
+            self.new_location[2] = self.MIN_Z
+        self.cnc.move_to(z=self.new_location[2])
+        print(f"Moviendo eje Z negativo a: {self.new_location[2]}")
