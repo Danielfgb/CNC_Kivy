@@ -170,7 +170,7 @@
 
                             MDFloatingActionButton:
                                 icon: "stop"
-                                on_release: root.CNCController.stop_all()
+                                on_release: root.stop_all_movement()
                                 elevation: 0
                                 pos_hint: {"center_x": 0, "center_y": 0.2}
                                 text_color: [0, 0, 0, 1]  
@@ -269,3 +269,16 @@
                     IconLeftWidget:
                         icon: "tools"
                         #on_release: root.     
+
+<DistanceDialogContent>:
+    orientation: 'vertical'
+    spacing: '12dp'
+    size_hint_y: None
+    height: "120dp"
+
+    MDTextField:
+        id: x_y_field
+        hint_text: "Nuevo valor para X e Y"
+        input_filter: 'float'
+        helper_text: "Entre 0 y 200 mm"
+        helper_text_mode: "on_focus"

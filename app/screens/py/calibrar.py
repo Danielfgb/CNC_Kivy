@@ -3,6 +3,7 @@ from kivy.clock import Clock
 from kivy.properties import StringProperty, ListProperty
 from kivymd.uix.menu import MDDropdownMenu
 from kivy.metrics import dp
+from kivymd.uix.dialog import MDDialog
 
 import json
 import shutil
@@ -10,6 +11,10 @@ import shutil
 from tools.camara import CameraController
 from tools.cnc import CNCController
 from tools.GPIO import GPIOController
+
+class DistanceDialogContent(BoxLayout):
+    pass
+
 
 class CalibrarScreen(Screen):
     current_time = StringProperty()
@@ -24,8 +29,12 @@ class CalibrarScreen(Screen):
     MIN_Z = -85.0  # Eje Z invertido: home es 0 y el máximo es -85
     MIN_XY = 0.0  # El mínimo para X e Y es 0
 
+    travel_distance_x_y = NumericProperty(20)  # Valor inicial para X e Y
+    travel_distance_z = NumericProperty(10)    # Valor para Z
+
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
+        self.dialog = None
         self.update_time()
         Clock.schedule_interval(self.update_time, 1)
 
@@ -42,6 +51,44 @@ class CalibrarScreen(Screen):
 
         self.gpio_controller = GPIOController()
         self.controladora = True
+
+    def modify_travel_distance(self):
+        if not self.dialog:
+            self.dialog = MDDialog(
+                title="Modificar Recorrido",
+                type="custom",
+                content_cls=DistanceDialogContent(),
+                buttons=[
+                    MDFlatButton(
+                        text="CANCELAR",
+                        on_release=lambda *args: self.dialog.dismiss()
+                    ),
+                    MDFlatButton(
+                        text="OK",
+                        on_release=self.update_travel_distance
+                    ),
+                ],
+            )
+        self.dialog.open()
+
+    def update_travel_distance(self, *args):
+        # Obtener valores de los TextField en el diálogo
+        x_y_value = float(self.dialog.content_cls.ids.x_y_field.text)
+
+        # Validar que los valores estén entre 0 y 200
+        if 0 <= x_y_value <= 200:
+            self.travel_distance_x_y = x_y_value
+            print(f"Nuevo valor de recorrido para X e Y: {self.travel_distance_x_y} mm")
+            self.travel_distance_z = 10  # Mantener Z fijo en 10 mm
+        else:
+            print("El valor de recorrido debe estar entre 0 y 200 mm")
+
+        # Cerrar el diálogo
+        self.dialog.dismiss()
+
+    def stop_all_movement(self):
+        """Detiene todo el movimiento de la CNC"""
+        self.cnc.stop_all() 
 
     def toggle_zoom(self):
         """Alterna el estado de zoom de la cámara."""
